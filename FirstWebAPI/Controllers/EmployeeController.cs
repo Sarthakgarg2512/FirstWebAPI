@@ -41,35 +41,62 @@ namespace FirstWebAPI.Controllers
             return empList;
         }
         [HttpPost("/AddEmp")]
-        public IActionResult AddEmployee([FromBody] Employee newEmployeeData)
+       
+        public IActionResult AddEmployee([FromBody] EmpViewModel employeeRequest)
         {
-            
-            
-                Employee addedEmployee = _repositoryEmployee.AddEmployee(newEmployeeData);
+           
+                if (employeeRequest == null)
+                {
+                    return BadRequest("Employee data is missing in the request.");
+                }
+                Employee newEmployee = new Employee
+                {
+                    FirstName = employeeRequest.FirstName,
+                    LastName = employeeRequest.LastName,
+                    BirthDate = employeeRequest.BirthDate,
+                    HireDate = employeeRequest.HireDate,
+                    Title = employeeRequest.Title,
+                    City = employeeRequest.City,
+                    ReportsTo = employeeRequest.ReportsTo > 0 ? employeeRequest.ReportsTo : null
+                };
+
+                Employee addedEmployee = _repositoryEmployee.AddEmployee(newEmployee);
+
+                // Return a Created response with the newly created employee
                 return CreatedAtAction(nameof(EmployeeDetails), new { id = addedEmployee.EmployeeId }, addedEmployee);
-            
-
-        }
-
+            }
         [HttpPost]
         public Employee EmployeeDetails(int id)
         {
             Employee employees = _repositoryEmployee.GetEmployee(id);
             return employees;
         }
-        [HttpPut]
+        [HttpPut("/Update")]
         public Employee Put(int id, [FromBody] Employee updatedEmployeeData)
         {
             updatedEmployeeData.EmployeeId = id;
             Employee savedEmployee = _repositoryEmployee.UpdateEmployee(updatedEmployeeData);
             return savedEmployee;
         }
-        [HttpDelete]
-        public Employee DeleteEmp(int id, [FromBody] Employee deleteEmployeeData)
+        
+        [HttpDelete("/DeleteEmp/{id}")]
+        public IActionResult DeleteEmp(int id)
         {
-            deleteEmployeeData.EmployeeId = id;
-            Employee savedEmployee = _repositoryEmployee.DeleteEmployee(deleteEmployeeData);
-            return savedEmployee;
+            try
+            {
+                Employee deletedEmployee = _repositoryEmployee.DeleteEmployee(id);
+
+                if (deletedEmployee == null)
+                {
+                    return NotFound(); // Employee with the specified ID was not found
+                }
+
+                return Ok(deletedEmployee); // Return the deleted employee
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message); // Return a bad request response for any errors
+            }
         }
 
     }

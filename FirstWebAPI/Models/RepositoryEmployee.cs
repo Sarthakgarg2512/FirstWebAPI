@@ -20,5 +20,33 @@ namespace FirstWebAPI.Models
             Employee employee = _context.Employees.Find(id);
             return employee;
         }
+        public Employee UpdateEmployee(Employee updatedEmployeeData)
+        {
+            _context.Employees.Update(updatedEmployeeData);
+            // Save changes to the database
+            _context.SaveChanges();
+            return updatedEmployeeData;
+        }
+        public Employee DeleteEmployee(Employee deleteEmployeeData) 
+        {
+            _context.Employees.Remove(deleteEmployeeData);
+            // Save changes to the database
+            _context.SaveChanges();
+            return deleteEmployeeData;
+        }
+
+        public Employee AddEmployee(Employee newEmployeeData)
+        {
+            // Add the new employee to the context
+            _context.Employees.Add(newEmployeeData);
+
+            // Save changes to the database
+            _context.SaveChanges();
+
+            return newEmployeeData;
+        }
+
+
     }
 }
+

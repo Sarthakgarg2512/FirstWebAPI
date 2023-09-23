@@ -79,7 +79,7 @@ namespace FirstWebAPI.Controllers
             return savedEmployee;
         }
         
-        [HttpDelete("/DeleteEmp/{id}")]
+        [HttpDelete("/DeleteEmp")]
         public IActionResult DeleteEmp(int id)
         {
             try
